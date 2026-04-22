@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Nav } from "@/components/aria/Nav";
 import { Hero } from "@/components/aria/Hero";
 import { Manifeste } from "@/components/aria/Manifeste";
-import { Services } from "@/components/aria/Services";
+import { PinnedServices } from "@/components/aria/PinnedServices";
 import { Processus } from "@/components/aria/Processus";
 import { Temoignages } from "@/components/aria/Temoignages";
 import { Tarifs } from "@/components/aria/Tarifs";
 import { Contact } from "@/components/aria/Contact";
+import { Marquee } from "@/components/aria/Marquee";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -29,15 +29,15 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   return (
-    <main className="bg-background text-foreground overflow-x-hidden">
-      <Nav />
+    <>
       <Hero />
       <Manifeste />
-      <Services />
+      <Marquee />
+      <PinnedServices />
       <Processus />
       <Temoignages />
       <Tarifs />
       <Contact />
-    </main>
+    </>
   );
 }
