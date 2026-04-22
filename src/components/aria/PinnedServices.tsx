@@ -73,13 +73,21 @@ function ServiceSlide({
   total: number;
   progress: MotionValue<number>;
 }) {
+  const clamp = (n: number) => Math.max(0, Math.min(1, n));
   const start = index / total;
   const end = (index + 1) / total;
-  const opacity = useTransform(
-    progress,
-    [start - 0.05, start + 0.05, end - 0.05, end + 0.05],
-    [0, 1, 1, 0],
-  );
+  const r0 = clamp(start - 0.05);
+  const r1 = clamp(start + 0.05);
+  const r2 = clamp(end - 0.05);
+  const r3 = clamp(end + 0.05);
+  // Ensure strictly monotonic input range for useTransform
+  const stops: [number, number, number, number] = [
+    r0,
+    Math.max(r1, r0 + 0.0001),
+    Math.max(r2, r1 + 0.0001),
+    Math.max(r3, r2 + 0.0001),
+  ];
+  const opacity = useTransform(progress, stops, [0, 1, 1, 0]);
   const y = useTransform(progress, [start, end], [60, -60]);
   const Icon = service.icon;
   return (
