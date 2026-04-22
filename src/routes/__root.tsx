@@ -1,4 +1,5 @@
 import { Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+// Link used in NotFoundComponent below
 import { Layout } from "@/components/aria/Layout";
 
 import appCss from "../styles.css?url";
