@@ -1,4 +1,4 @@
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, type MotionValue } from "framer-motion";
 import { useRef } from "react";
 import { Compass, Flower2, HeartHandshake, Wind } from "lucide-react";
 
@@ -36,58 +36,62 @@ export function PinnedServices() {
             <h2 className="font-display text-4xl md:text-6xl leading-tight max-w-md">
               Quatre voies. <em className="italic text-[var(--color-gold)]">Une destination.</em>
             </h2>
-            <div className="mt-12 flex gap-2">
-              {services.map((_, i) => {
-                const active = useTransform(scrollYProgress, (v) => {
-                  const idx = Math.min(services.length - 1, Math.floor(v * services.length));
-                  return idx >= i ? 1 : 0.2;
-                });
-                return (
-                  <motion.span
-                    key={i}
-                    style={{ opacity: active }}
-                    className="h-px w-12 bg-[var(--color-gold)]"
-                  />
-                );
-              })}
-            </div>
+          <div className="mt-12 flex gap-2">
+            {services.map((_, i) => (
+              <ProgressTick key={i} index={i} total={services.length} progress={scrollYProgress} />
+            ))}
+          </div>
           </div>
 
           <div className="relative h-[420px]">
-            {services.map((s, i) => {
-              const start = i / services.length;
-              const end = (i + 1) / services.length;
-              const opacity = useTransform(
-                scrollYProgress,
-                [start - 0.05, start + 0.05, end - 0.05, end + 0.05],
-                [0, 1, 1, 0],
-              );
-              const y = useTransform(scrollYProgress, [start, end], [60, -60]);
-              const Icon = s.icon;
-              return (
-                <motion.article
-                  key={s.title}
-                  style={{ opacity, y }}
-                  className="absolute inset-0 flex flex-col justify-center"
-                >
-                  <div className="flex items-center gap-4 text-[var(--color-gold)]">
-                    <Icon size={28} strokeWidth={1.25} />
-                    <span className="text-xs uppercase tracking-[0.3em]">
-                      0{i + 1} / 0{services.length}
-                    </span>
-                  </div>
-                  <h3 className="font-display text-5xl md:text-7xl mt-6 leading-[1.05]">
-                    {s.title}
-                  </h3>
-                  <p className="mt-6 text-white/60 max-w-md font-light text-lg leading-relaxed">
-                    {s.text}
-                  </p>
-                </motion.article>
-              );
-            })}
+            {services.map((s, i) => (
+              <ServiceSlide key={s.title} service={s} index={i} total={services.length} progress={scrollYProgress} />
+            ))}
           </div>
         </div>
       </div>
     </section>
+  );
+}
+
+function ProgressTick({ index, total, progress }: { index: number; total: number; progress: MotionValue<number> }) {
+  const opacity = useTransform(progress, (v) => {
+    const idx = Math.min(total - 1, Math.floor(v * total));
+    return idx >= index ? 1 : 0.2;
+  });
+  return <motion.span style={{ opacity }} className="h-px w-12 bg-[var(--color-gold)]" />;
+}
+
+function ServiceSlide({
+  service,
+  index,
+  total,
+  progress,
+}: {
+  service: (typeof services)[number];
+  index: number;
+  total: number;
+  progress: MotionValue<number>;
+}) {
+  const start = index / total;
+  const end = (index + 1) / total;
+  const opacity = useTransform(
+    progress,
+    [start - 0.05, start + 0.05, end - 0.05, end + 0.05],
+    [0, 1, 1, 0],
+  );
+  const y = useTransform(progress, [start, end], [60, -60]);
+  const Icon = service.icon;
+  return (
+    <motion.article style={{ opacity, y }} className="absolute inset-0 flex flex-col justify-center">
+      <div className="flex items-center gap-4 text-[var(--color-gold)]">
+        <Icon size={28} strokeWidth={1.25} />
+        <span className="text-xs uppercase tracking-[0.3em]">
+          0{index + 1} / 0{total}
+        </span>
+      </div>
+      <h3 className="font-display text-5xl md:text-7xl mt-6 leading-[1.05]">{service.title}</h3>
+      <p className="mt-6 text-white/60 max-w-md font-light text-lg leading-relaxed">{service.text}</p>
+    </motion.article>
   );
 }
